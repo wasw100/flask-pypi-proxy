@@ -1,2 +1,2 @@
-# flask-pypi-proxy3
+# flask-pypi-proxy
 pypi proxy
