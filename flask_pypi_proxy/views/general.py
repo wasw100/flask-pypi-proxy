@@ -32,9 +32,25 @@ def packages(package_type, letter, package_name, package_file):
                                 package_file)
     if os.path.exists(egg_filename):
         # 直接从本地下载
-        return 'exist'
+        def file_generate():
+            with open(egg_filename, 'rb') as f:
+                while True:
+                    data = f.read(4096)
+                    if not data:
+                        break
+                    yield data
+        return Response(file_generate())
 
-    # TODO: 从pypi网站下载并保存到本地
+    package_path = os.path.join(pypi.base_folder_path, package_name)
+    if not os.path.exists(package_path):
+        os.makedirs(package_path)
+
     url = urljoin(pypi.base_url, request.path)
-    with closing(requests.get(url, stream=True)) as r:
-        return Response(r)
+
+    def generate():
+        with closing(requests.get(url, stream=True)) as r:
+            with open(egg_filename, 'wb') as f:
+                for data in r:
+                    f.write(data)
+                    yield data
+    return Response(generate())
