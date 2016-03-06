@@ -6,16 +6,22 @@ import requests
 
 from flask_pypi_proxy.ext import pypi
 
-mod = Blueprint('simple', __name__, url_prefix='/simple')
+mod = Blueprint('general', __name__)
 
 
 def generate():
     url = urljoin(pypi.base_url, request.path)
     with closing(requests.get(url, stream=True)) as r:
-        for data in r.iter_content():
+        for data in r:
             yield data
 
 
-@mod.route('/<package_name>/')
-def package(package_name):
+@mod.route('/simple/<package_name>/')
+def package_name(package_name):
+    return Response(stream_with_context(generate()))
+
+
+@mod.route('/packages/<package_type>/<letter>/<package_name>/<package_file>',
+                   methods=['GET'])
+def packages(package_type, letter, package_name, package_file):
     return Response(stream_with_context(generate()))

@@ -11,6 +11,6 @@ class Pypi(object):
 
     def init_app(self, app):
         self.base_url = app.config.get('PYPI_BASE_URL',
-                                       'http://pypi.python.org')
+                                       'https://pypi.python.org')
 
 pypi = Pypi()
