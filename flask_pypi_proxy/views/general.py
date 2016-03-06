@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import os.path
 from urlparse import urljoin
 from contextlib import closing
 from flask import (
@@ -9,6 +10,11 @@ import requests
 from flask_pypi_proxy.ext import pypi
 
 mod = Blueprint('general', __name__)
+
+
+@mod.before_request
+def before_request():
+    print 'before request'
 
 
 def generate():
@@ -38,4 +44,9 @@ def package_name(package_name):
 @mod.route('/packages/<package_type>/<letter>/<package_name>/<package_file>',
            methods=['GET'])
 def packages(package_type, letter, package_name, package_file):
+    egg_filename = os.path.join(pypi.base_folder_path,
+                                package_name,
+                                package_file)
+    if os.path.exists(egg_filename):
+        return 'exist'
     return Response(stream_with_context(generate()))
