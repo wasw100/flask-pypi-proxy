@@ -12,7 +12,7 @@ mod = Blueprint('simple', __name__, url_prefix='/simple')
 def generate():
     url = urljoin(pypi.base_url, request.path)
     with closing(requests.get(url, stream=True)) as r:
-        for data in r.iter_content():
+        for data in r:
             yield data
 
 
