@@ -92,6 +92,7 @@ def simple_package(package_name):
 @app.route('/packages/<package_type>/<letter>/<package_name>/<package_file>',
            methods=['GET'])
 def packages(package_type, letter, package_name, package_file):
+    package_name = package_name.lower()
     egg_filename = os.path.join(pypi.base_folder_path,
                                 package_name,
                                 package_file)
