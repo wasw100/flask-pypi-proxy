@@ -4,10 +4,14 @@ import os.path
 import hashlib
 import re
 from contextlib import closing
-from urlparse import urljoin
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
 import requests
 
 from flask import Flask, request, Response, render_template
+from utils import get_package_name
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -92,7 +96,7 @@ def simple_package(package_name):
 @app.route('/packages/<package_type>/<letter>/<package_name>/<package_file>',
            methods=['GET'])
 def packages(package_type, letter, package_name, package_file):
-    package_name = package_name.lower()
+    package_name = get_package_name(package_file) or package_name.lower()
     egg_filename = os.path.join(pypi.base_folder_path,
                                 package_name,
                                 package_file)
@@ -123,7 +127,7 @@ def packages(package_type, letter, package_name, package_file):
                     yield data
         # 计算md5
         md5 = m.hexdigest()
-        with open('{0}.md5'.format(egg_filename), 'wb') as f:
+        with open('{0}.md5'.format(egg_filename), 'w') as f:
             f.write(md5)
         return
 
