@@ -18,9 +18,9 @@ from utils import get_package_name
 app = Flask(__name__)
 app.config.from_object('config')
 
-logger = app.logger
 if not app.debug:
-    handler = RotatingFileHandler('web.log', maxBytes=10000, backupCount=1)
+    log_path = os.path.join(app.root_path, 'web.log')
+    handler = RotatingFileHandler(log_path, maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
 
@@ -94,7 +94,7 @@ def simple_package(package_name):
 
             if md5 != pd.get(filename):
                 os.remove(egg_file)
-                logger.error('delete file %s', egg_file)
+                app.logger.error('delete file %s', egg_file)
 
     return r.text
 
