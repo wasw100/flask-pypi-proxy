@@ -4,6 +4,8 @@ import os.path
 import hashlib
 import re
 from contextlib import closing
+import logging
+from logging.handlers import RotatingFileHandler
 try:
     from urlparse import urljoin
 except ImportError:
@@ -17,6 +19,10 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 logger = app.logger
+if not app.debug:
+    handler = RotatingFileHandler('web.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
 
 
 class PypiBase(object):
