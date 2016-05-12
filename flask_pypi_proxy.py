@@ -12,7 +12,7 @@ except ImportError:
     from urllib.parse import urljoin
 import requests
 
-from flask import Flask, request, Response, render_template
+from flask import Flask, request, Response, render_template, make_response
 from utils import get_package_name
 
 app = Flask(__name__)
@@ -75,6 +75,9 @@ _PACKET_PARTERN = re.compile(r'/([\w\-\.]+)#md5=(\w+)')
 def simple_package(package_name):
     url = urljoin(pypi.base_url, request.path)
     r = requests.get(url)
+    if r.status_code != 200:
+        return make_response(r.text, r.status_code)
+
     pd = dict()
     for name, md5 in _PACKET_PARTERN.findall(r.text):
         pd[name] = md5
